@@ -210,6 +210,34 @@ select:focus { border-color: #e8390e; box-shadow: 0 0 0 3px rgba(232,57,14,0.12)
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
 
+/* ── PAGE TABS ── */
+.page-tabs-bar {
+  display: flex;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.page-tab {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 28px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all .15s;
+  font-family: 'Inter', sans-serif;
+}
+.page-tab:hover { background: #f1f5f9; color: #334155; }
+.page-tab.active { background: #e8390e; color: #fff; box-shadow: 0 2px 6px rgba(232,57,14,0.25); }
+
 /* ── DIVIDER ── */
 .divider { border: none; border-top: 1px solid #e2e8f0; }
 
@@ -270,6 +298,10 @@ select:focus { border-color: #e8390e; box-shadow: 0 0 0 3px rgba(232,57,14,0.12)
   letter-spacing: 0.06em;
   margin-bottom: 9px;
 }
+
+
+
+
 </style>
 </head>
 <body>
@@ -334,87 +366,104 @@ select:focus { border-color: #e8390e; box-shadow: 0 0 0 3px rgba(232,57,14,0.12)
   <!-- CONTENT -->
   <main class="main">
 
-    <!-- METRICS -->
-    <div class="metrics" id="metricCards"></div>
-
-    <!-- SCORE + EVOLUCIÓN -->
-    <div class="grid2">
-      <div class="card">
-        <div class="chart-title">Score por sede</div>
-        <div class="legend" id="legBar"></div>
-        <div style="position:relative;height:240px"><canvas id="barChart"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="chart-title">Evolución mensual</div>
-        <div class="tabs" id="sedeTabsWrap"></div>
-        <div style="position:relative;height:210px"><canvas id="lineChart"></canvas></div>
-      </div>
+    <!-- PAGE TABS -->
+    <div class="page-tabs-bar">
+      <button class="page-tab active" id="tabRevinate" onclick="switchTab('revinate')">REVINATE</button>
+      <button class="page-tab" id="tabOtas" onclick="switchTab('otas')">OTAs</button>
     </div>
 
-    <!-- OTAs -->
-    <div class="grid3">
-      <div class="card">
-        <div class="chart-title">Puntuación OTAs</div>
-        <div class="legend" id="legOta"></div>
-        <div style="position:relative;height:220px"><canvas id="otaBar"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="chart-title">Evolución mensual OTAs</div>
-        <div class="legend" id="legOtaLine"></div>
-        <div style="position:relative;height:220px"><canvas id="otaLineChart"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="chart-title">Menciones OTAs</div>
-        <div class="legend" id="legMen"></div>
-        <div style="position:relative;height:220px"><canvas id="menBar"></canvas></div>
-      </div>
-    </div>
+    <!-- ══ TAB: REVINATE ══ -->
+    <div id="pageRevinate">
 
-    <hr class="divider">
+      <!-- METRICS REVINATE -->
+      <div class="metrics" style="grid-template-columns:repeat(3,minmax(0,1fr))" id="metricCardsRevinate"></div>
 
-    <!-- GENERAL A&B -->
-    <div class="card">
-      <div class="chart-title">General A&amp;B</div>
-      <div class="tabs" id="gabTabsWrap"></div>
-      <div class="grid2" style="margin:0">
-        <div>
-          <div class="legend" id="legGabScore"></div>
-          <div style="position:relative;height:200px"><canvas id="gabScoreChart"></canvas></div>
-          <p class="chart-sub">Puntuación mensual</p>
+      <!-- SCORE + EVOLUCIÓN -->
+      <div class="grid2">
+        <div class="card">
+          <div class="chart-title">Score por sede</div>
+          <div class="legend" id="legBar"></div>
+          <div style="position:relative;height:240px"><canvas id="barChart"></canvas></div>
         </div>
-        <div>
-          <div class="legend" id="legGabMen"></div>
-          <div style="position:relative;height:200px"><canvas id="gabMenChart"></canvas></div>
-          <p class="chart-sub">Menciones por sede</p>
+        <div class="card">
+          <div class="chart-title">Evolución mensual</div>
+          <div class="tabs" id="sedeTabsWrap"></div>
+          <div style="position:relative;height:210px"><canvas id="lineChart"></canvas></div>
         </div>
       </div>
+
     </div>
 
-    <!-- RANKING -->
-    <div class="card">
-      <div class="chart-title" style="margin-bottom:14px">Ranking General A&amp;B</div>
-      <div class="grid2" style="margin:0">
-        <div>
-          <div class="col-head" style="color:#16a34a">&#9670; Top 5 mejores</div>
-          <div id="rankTop"></div>
-        </div>
-        <div>
-          <div class="col-head" style="color:#dc2626">&#9670; Top 5 menores</div>
-          <div id="rankBot"></div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:16px;margin-top:12px;font-size:11px;color:#94a3b8;">
-        <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#16a34a;display:inline-block"></span>Mejor score</span>
-        <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#dc2626;display:inline-block"></span>Menor score</span>
-        <span>· menciones del período</span>
-      </div>
-    </div>
+    <!-- ══ TAB: OTAS ══ -->
+    <div id="pageOtas" style="display:none">
 
-    <!-- POPULAR TOPICS -->
-    <div class="card">
-      <div class="chart-title" style="margin-bottom:14px">Popular Topics</div>
-      <div id="ptContent"></div>
-    </div>
+      <!-- METRICS OTAS -->
+      <div class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr))" id="metricCardsOtas"></div>
+
+      <!-- RANKING AL PRINCIPIO -->
+      <div class="card">
+        <div class="chart-title" style="margin-bottom:14px">Ranking General A&amp;B</div>
+        <div class="grid2" style="margin:0">
+          <div>
+            <div class="col-head" style="color:#16a34a">&#9670; Top 5 mejores</div>
+            <div id="rankTop"></div>
+          </div>
+          <div>
+            <div class="col-head" style="color:#dc2626">&#9670; Top 5 menores</div>
+            <div id="rankBot"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:16px;margin-top:12px;font-size:11px;color:#94a3b8;">
+          <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#16a34a;display:inline-block"></span>Mejor score</span>
+          <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#dc2626;display:inline-block"></span>Menor score</span>
+          <span>· menciones del período</span>
+        </div>
+      </div>
+
+      <!-- OTAs -->
+      <div class="grid3">
+        <div class="card">
+          <div class="chart-title">Puntuación OTAs</div>
+          <div class="legend" id="legOta"></div>
+          <div style="position:relative;height:220px"><canvas id="otaBar"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Evolución mensual OTAs</div>
+          <div class="legend" id="legOtaLine"></div>
+          <div style="position:relative;height:220px"><canvas id="otaLineChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Menciones OTAs</div>
+          <div class="legend" id="legMen"></div>
+          <div style="position:relative;height:220px"><canvas id="menBar"></canvas></div>
+        </div>
+      </div>
+
+      <!-- GENERAL A&B -->
+      <div class="card">
+        <div class="chart-title">General A&amp;B</div>
+        <div class="tabs" id="gabTabsWrap"></div>
+        <div class="grid2" style="margin:0">
+          <div>
+            <div class="legend" id="legGabScore"></div>
+            <div style="position:relative;height:200px"><canvas id="gabScoreChart"></canvas></div>
+            <p class="chart-sub">Puntuación mensual</p>
+          </div>
+          <div>
+            <div class="legend" id="legGabMen"></div>
+            <div style="position:relative;height:200px"><canvas id="gabMenChart"></canvas></div>
+            <p class="chart-sub">Menciones por sede</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- POPULAR TOPICS -->
+      <div class="card">
+        <div class="chart-title" style="margin-bottom:14px">Popular Topics</div>
+        <div id="ptContent"></div>
+      </div>
+
+    </div><!-- end pageOtas -->
 
   </main>
 </div>
@@ -591,14 +640,31 @@ function buildMetrics(){
   const vs=visSedes();
   const best=vs.map(s=>{const sc=d.filter(r=>r.sede===s&&r.score!==null).map(r=>r.score);return{s,a:avg(sc)};}).filter(x=>x.a!==null).sort((a,b)=>b.a-a.a);
   const worst=[...best].reverse();
-  const tm=fOta().reduce((a,r)=>a+r.mentions,0)+fGab().reduce((a,r)=>a+r.mentions,0);
-  document.getElementById('metricCards').innerHTML=`
-    <div class="metric"><div class="metric-label">Score global</div><div class="metric-value accent">${ga!==null?ga.toFixed(1)+'%':'—'}</div><div class="metric-sub">filtro activo</div></div>
+  // REVINATE metrics (3 cards: score global, mejor sede, sede menor)
+  document.getElementById('metricCardsRevinate').innerHTML=`
+    <div class="metric"><div class="metric-label">Score global</div><div class="metric-value accent">${ga!==null?ga.toFixed(1)+'%':'—'}</div><div class="metric-sub">Satisfaction score</div></div>
     <div class="metric"><div class="metric-label">Mejor sede</div><div class="metric-value">${best.length?best[0].s:'—'}</div><div class="metric-sub">${best.length?best[0].a.toFixed(1)+'%':''}</div></div>
     <div class="metric"><div class="metric-label">Sede menor score</div><div class="metric-value">${worst.length?worst[0].s:'—'}</div><div class="metric-sub">${worst.length?worst[0].a.toFixed(1)+'%':''}</div></div>
-    <div class="metric"><div class="metric-label">Total menciones</div><div class="metric-value">${tm.toLocaleString()}</div><div class="metric-sub">OTAs + General A&amp;B</div></div>
+  `;
+  // OTAS metrics (2 cards: score global OTAs, total menciones)
+  const filtOta=fOta();
+  const otaScores=filtOta.filter(r=>r.score!==null).map(r=>r.score);
+  const otaAvg=avg(otaScores);
+  const totalMen=filtOta.reduce((a,r)=>a+r.mentions,0)+fGab().reduce((a,r)=>a+r.mentions,0);
+  document.getElementById('metricCardsOtas').innerHTML=`
+    <div class="metric"><div class="metric-label">Score global OTAs</div><div class="metric-value accent">${otaAvg!==null?otaAvg.toFixed(1)+'%':'—'}</div><div class="metric-sub">Promedio todas las OTAs</div></div>
+    <div class="metric"><div class="metric-label">Total menciones</div><div class="metric-value">${totalMen.toLocaleString()}</div><div class="metric-sub">OTAs + General A&amp;B</div></div>
   `;
 }
+
+window.switchTab=function(tab){
+  document.getElementById('pageRevinate').style.display=tab==='revinate'?'flex':'none';
+  document.getElementById('pageRevinate').style.flexDirection='column';
+  document.getElementById('pageOtas').style.display=tab==='otas'?'flex':'none';
+  document.getElementById('pageOtas').style.flexDirection='column';
+  document.getElementById('tabRevinate').classList.toggle('active',tab==='revinate');
+  document.getElementById('tabOtas').classList.toggle('active',tab==='otas');
+};
 
 function buildBar(){
   const d=fRaw(); const vs=visSedes();
@@ -725,14 +791,10 @@ function buildPopularTopics(){
 
 window.setSede=s=>{selSede=s;buildSedeTabs();buildLine();};
 window.setGab=s=>{selGab=s;buildSedeTabs();buildGab();};
-window.resetFilters=function(){
-  ['mesFilter','catFilter','sedeFilter'].forEach(id=>{document.getElementById(id).value='ALL';});
-  refresh();
-};
+window.resetFilters=function(){['mesFilter','catFilter','sedeFilter'].forEach(id=>{document.getElementById(id).value='ALL';});refresh();};
 function refresh(){buildSedeTabs();buildMetrics();buildBar();buildLine();buildOta();buildGab();buildRanking();buildPopularTopics();}
 ['mesFilter','catFilter','sedeFilter'].forEach(id=>document.getElementById(id).addEventListener('change',refresh));
-
-window.onload=function(){refresh();};
+window.onload=function(){switchTab('revinate');refresh();};
 </script>
 </body>
 </html>
